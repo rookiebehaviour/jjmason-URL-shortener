@@ -23,6 +23,10 @@ app.get('/', function(req, res) {
 });
 
 // Your first API endpoint
+app.get('/api/hello', function(req, res) {
+  res.json({ greeting: 'hello API' });
+});
+
 app.post('/api/shortcut/new', function(req, res) {
   const bodyurl = req.body.url;
   const lookup = dns.lookup(urlparser.parse(bodyurl).hostname, (err, address) => {
