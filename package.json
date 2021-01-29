@@ -1,10 +1,10 @@
 {
-  "name": "jjmason_URL_shortener",
+  "name": "jjmason_url_shortener",
   "version": "0.0.3",
   "description": "URL shortener microservice",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
     "dev": "nodemon server.js"
   },
   "engines": {
@@ -14,20 +14,22 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
-    "express": "^5.0.0-alpha.2"
+    "express": "^5.0.0-alpha.2",
+    "mongoose": "^5.11.14"
   },
   "repository": {
-		"type": "git",
-		"url": "https://github.com/rookiebehaviour/jjmason-URL-shortener"
-	},
+    "type": "git",
+    "url": "https://github.com/rookiebehaviour/jjmason-URL-shortener"
+  },
   "keywords": [
-		"node",
-		"express",
+    "node",
+    "express",
     "mongoDB",
     "mongoose",
-		"heroku"
-	],
+    "heroku"
+  ],
   "license": "MIT",
   "devDependencies": {
     "nodemon": "^2.0.4"
   }
+}

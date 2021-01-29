@@ -2,16 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const app = express();
+const bodyParser = require('body-parser');
 const dns = require('dns');
-const urlparser = require('url');
+const app = express();
 
 // Basic Configuration
 const port = process.env.PORT || 3000;
-mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true});
-
-const Schema = new mongoose.Schema({ url: 'String' });
-const url = mongoose.model('url', Schema);
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ entended: false }));
@@ -27,23 +23,43 @@ app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-app.post('/api/shortcut/new', function(req, res) {
-  const bodyurl = req.body.url;
-  const lookup = dns.lookup(urlparser.parse(bodyurl).hostname, (err, address) => {
-    if (!address) {
-      res.json({ error: "Invalid URL" })
-    } else {
-      const url = new url({ url: bodyurl})
-      url.save(err, data) => {
-        res.json({
-          original_url: data.url,
-          short_url: data.id
-        })
-      }
-    }
-  })
-});
-
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
+});
+
+//Database Connection
+mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true});
+let urlSchema = new mongoose.Schema({ original : {type: String, required: true}, short : Number
+});
+let url = mongoose.model('Url', urlSchema);
+let responseObject = {}
+
+app.post('/api/shorturl/new', bodyParser.urlencoded({ extended: false }), (req, res) => {
+  let inputUrl = request.body['url']
+  dns.lookup({url_input}, function onLookup(err, addresses, family) {
+    console.log('addresses:', addresses);
+  })
+  responseObject['original_url'] = inputUrl
+
+  let inputShort = 1
+
+  Url.findOne({})
+  .sort({short: 'desc'})
+  .exec((error, result) => {
+    if(!error && result !=undefined) {
+      inputShort = result.short + 1
+    }
+    if(!error) {
+      Url.findOneAndUpdate(
+        {original: inputUrl},
+        {original: originalUrl, short: inputShort},
+        {new: true, upsert: true},
+        (error, savedUrl) => {
+          if(!error) {
+            responseObject['short_url'] = savedURL.shorturlresponse.json(responseObject)
+          }
+        }
+      )
+    }
+  })
 });
