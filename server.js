@@ -29,19 +29,20 @@ app.listen(port, function() {
 
 //Database Connection
 mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true});
-let urlSchema = new mongoose.Schema({ original : {type: String, required: true}, short : Number
-});
-let url = mongoose.model('Url', urlSchema);
-let responseObject = {}
+let urlSchema = new mongoose.Schema({ original : {type: String, required: true}, short : Number });
+let Url = mongoose.model('Url', urlSchema);
+let responseObject = {};
 
 app.post('/api/shorturl/new', bodyParser.urlencoded({ extended: false }), (req, res) => {
   let inputUrl = request.body['url']
-  dns.lookup({url_input}, function onLookup(err, addresses, family) {
-    console.log('addresses:', addresses);
-  })
-  responseObject['original_url'] = inputUrl
+  let urlRegex = new RegExp(/^(?![0-9]+$)(?!.*-$)(?!-)[a-zA-Z0-9-]{1,63}$/g;)
+    if(!inputUrl.match(urlRegex)) {
+      response.json({error: 'Invalid URL'})
+      return
+    }
+  responseObject['original_url'] = inputUrl;
 
-  let inputShort = 1
+  let inputShort = 1;
 
   Url.findOne({})
   .sort({short: 'desc'})
@@ -60,6 +61,18 @@ app.post('/api/shorturl/new', bodyParser.urlencoded({ extended: false }), (req, 
           }
         }
       )
+    }
+  })
+});
+
+app.get('/api/shorturl/:input', (req, res) => {
+  let input = request.params.inputUrl
+
+  Url.findOne({short: input}, (error, result) => {
+    if(!error && result != undefined) {
+      response.redirect(result.original)
+    } else {
+      response.json('URL not Found')
     }
   })
 });
