@@ -41,8 +41,9 @@ let resObject = {};
 
 app.post('/api/shorturl/new', bodyParser.urlencoded({ extended: false }), (req, res) => {
   let inputUrl = req.body['url']
-  let urlRegex = new RegExp(/^(?![0-9]+$)(?!.*-$)(?!-)[a-zA-Z0-9-]{1,63}$/gi);
-  if(!inputUrl.match(urlRegex)) {
+
+  let urlRegex = new RegExp(/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi);
+    if(!inputUrl.match(urlRegex)) {
     res.json({error: 'Invalid URL'})
     return
   }
@@ -59,7 +60,7 @@ app.post('/api/shorturl/new', bodyParser.urlencoded({ extended: false }), (req, 
     if(!err) {
       Url.findOneAndUpdate(
         {original: inputUrl},
-        {original: originalUrl, short: inputShort},
+        {original: inputUrl, short: inputShort},
         {new: true, upsert: true},
         (err, savedUrl) => {
           if(!err) {
@@ -73,7 +74,7 @@ app.post('/api/shorturl/new', bodyParser.urlencoded({ extended: false }), (req, 
 });
 
 app.get('/api/shorturl/:input', (req, res) => {
-  let input = req.params.inputUrl;
+  let input = req.params.input;
 
   Url.findOne({short: input}, (err, result) => {
     if(!err && result != undefined) {
