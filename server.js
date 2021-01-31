@@ -39,7 +39,7 @@ let resObject = {};
 app.post('/api/shorturl/new', bodyParser.urlencoded({ extended: false }), (req, res) => {
   let inputUrl = req.body['url']
 
-  let urlRegex = new RegExp(/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi);
+  let urlRegex = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi);
 
     if(!inputUrl.match(urlRegex)) {
     res.json({error: 'Invalid URL'})
