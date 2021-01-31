@@ -1,13 +1,13 @@
 require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const mongo = require('mongodb');
-const cors = require('cors');
-const app = express();
-const bodyParser = require('body-parser');
+var express = require('express');
+var mongoose = require('mongoose');
+var mongo = require('mongodb');
+var cors = require('cors');
+var app = express();
+var bodyParser = require('body-parser');
 
 // Basic Configuration
-const port = process.env.PORT || 3000;
+var port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -28,28 +28,27 @@ app.listen(port, function() {
 });
 
 //Database Connection
-const uri = process.env.DB_URI;
+let uri = process.env.DB_URI;
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true});
-mongoose.connection.once("open", () => {
-  console.log("MongoDB connection established successfully");
-});
 
 
-const urlSchema = new mongoose.Schema({ original : {type: String, required: true}, short : Number });
-const Url = mongoose.model('Url', urlSchema);
+let urlSchema = new mongoose.Schema({ original : {type: String, required: true}, short : Number });
+let Url = mongoose.model('Url', urlSchema);
 let resObject = {};
 
 app.post('/api/shorturl/new', bodyParser.urlencoded({ extended: false }), (req, res) => {
   let inputUrl = req.body['url']
 
   let urlRegex = new RegExp(/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi);
+
     if(!inputUrl.match(urlRegex)) {
     res.json({error: 'Invalid URL'})
-    return
+     return
   }
-  resObject['original_url'] = inputUrl;
 
-  let inputShort = 1;
+  resObject['original_url'] = inputUrl
+
+  let inputShort = 1
 
   Url.findOne({})
   .sort({short: 'desc'})
@@ -64,7 +63,7 @@ app.post('/api/shorturl/new', bodyParser.urlencoded({ extended: false }), (req, 
         {new: true, upsert: true},
         (err, savedUrl) => {
           if(!err) {
-            resObject['short_url'] = savedURL.short
+            resObject['short_url'] = savedUrl.short
             res.json(resObject)
           }
         }
@@ -72,9 +71,8 @@ app.post('/api/shorturl/new', bodyParser.urlencoded({ extended: false }), (req, 
     }
   })
 });
-
 app.get('/api/shorturl/:input', (req, res) => {
-  let input = req.params.input;
+  let input = req.params.input
 
   Url.findOne({short: input}, (err, result) => {
     if(!err && result != undefined) {
